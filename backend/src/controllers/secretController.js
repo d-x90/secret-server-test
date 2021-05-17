@@ -13,6 +13,12 @@ router.get('/:hash', async (req, res, next) => {
       throw new Error('Secret not found');
     }
 
+    if (secret.expiresAt.getTime() < Date.now()) {
+      await Secret.deleteOne({ _id: secret._id });
+      res.status(404);
+      throw new Error('Secret already expired');
+    }
+
     secret.remainingViews -= 1;
     if (secret.remainingViews === 0) {
       await Secret.deleteOne({ _id: secret._id });
@@ -23,7 +29,6 @@ router.get('/:hash', async (req, res, next) => {
       );
     }
 
-    console.log(secret);
     res.json(secret);
   } catch (error) {
     next(error);
