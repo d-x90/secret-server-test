@@ -3,12 +3,10 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const middlewares = require('./middlewares');
 const secretController = require('./controllers/secretController');
-require('dotenv').config();
-
-const SERVER_PORT = process.env.SERVER_PORT || 8080;
+const { SERVER_PORT, DB_CONNECTION_STRING } = require('./config');
 
 mongoose
-  .connect(process.env.DB_CONNECTION_STRING, {
+  .connect(DB_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     authSource: 'admin',

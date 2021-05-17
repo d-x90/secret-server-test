@@ -8,7 +8,10 @@ const SecretSchema = new Schema(
       type: String,
       required: true,
     },
-    hash: String,
+    hash: {
+      type: String,
+      unique: true,
+    },
     expiresAt: Date,
     remainingViews: {
       type: Number,

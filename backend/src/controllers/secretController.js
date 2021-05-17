@@ -1,6 +1,10 @@
 const { Router } = require('express');
 const Secret = require('../models/secret');
-const crypto = require('crypto');
+const {
+  createHash,
+  encryptSecret,
+  decryptSecret,
+} = require('../services/cryptoService');
 
 const router = Router();
 
@@ -28,8 +32,15 @@ router.get('/:hash', async (req, res, next) => {
         { remainingViews: secret.remainingViews }
       );
     }
+    const secretDto = {
+      hash: secret.hash,
+      secretText: decryptSecret(secret.secretText),
+      createdAt: secret.createdAt,
+      expiresAt: secret.expiresAt,
+      remainingViews: secret.remainingViews,
+    };
 
-    res.json(secret);
+    res.json(secretDto);
   } catch (error) {
     next(error);
   }
@@ -39,18 +50,31 @@ router.post('/', async (req, res, next) => {
   try {
     const payload = req.body;
 
+    const secretText = payload.secret;
+
     const secret = new Secret({
-      secretText: payload.secret,
-      hash: crypto.createHash('sha256').update(payload.secret).digest('hex'),
+      secretText: encryptSecret(payload.secret),
+      hash: createHash(payload.secret),
       expiresAt: Date.now() + payload.expireAfter * 60 * 1000,
       remainingViews: payload.expireAfterViews,
     });
 
     const createdSecret = await secret.save();
-    res.json(createdSecret);
+
+    const secretDto = {
+      hash: createdSecret.hash,
+      secretText: secretText,
+      createdAt: createdSecret.createdAt,
+      expiresAt: createdSecret.expiresAt,
+      remainingViews: createdSecret.remainingViews,
+    };
+
+    res.json(secretDto);
   } catch (error) {
     if (error.name === 'ValidationError') {
       res.status(400);
+    } else if (error.name === 'MongoError') {
+      res.status(409);
     }
 
     next(error);
