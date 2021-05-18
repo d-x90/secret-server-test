@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const middlewares = require('./middlewares');
-const secretController = require('./controllers/secretController');
+const secretRoutes = require('./routes/secretRoutes');
 const { SERVER_PORT, DB_CONNECTION_STRING } = require('./config');
 
 mongoose
@@ -24,7 +24,7 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: '*' }));
 
-app.use('/api/secret', secretController);
+app.use('/api/secret', secretRoutes);
 
 app.use(middlewares.notFound);
 

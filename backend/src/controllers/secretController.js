@@ -1,10 +1,9 @@
-const { Router } = require('express');
 const secretRepository = require('../repositories/secretRepository');
 const { decryptSecret } = require('../services/cryptoService');
 
-const router = Router();
+const secretController = {};
 
-router.get('/:hash', async (req, res, next) => {
+secretController.getOneSecret = async (req, res, next) => {
   try {
     const secret = await secretRepository.getSecretByHash(req.params.hash);
 
@@ -41,9 +40,9 @@ router.get('/:hash', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-router.post('/', async (req, res, next) => {
+secretController.createSecret = async (req, res, next) => {
   try {
     const payload = req.body;
 
@@ -69,6 +68,6 @@ router.post('/', async (req, res, next) => {
 
     next(error);
   }
-});
+};
 
-module.exports = router;
+module.exports = secretController;
