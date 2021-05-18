@@ -1,16 +1,12 @@
 const { Router } = require('express');
-const Secret = require('../models/secret');
-const {
-  createHash,
-  encryptSecret,
-  decryptSecret,
-} = require('../services/cryptoService');
+const secretRepository = require('../repositories/secretRepository');
+const { decryptSecret } = require('../services/cryptoService');
 
 const router = Router();
 
 router.get('/:hash', async (req, res, next) => {
   try {
-    const secret = await Secret.findOne({ hash: req.params.hash }).exec();
+    const secret = await secretRepository.getSecretByHash(req.params.hash);
 
     if (!secret) {
       res.status(404);
@@ -18,20 +14,21 @@ router.get('/:hash', async (req, res, next) => {
     }
 
     if (secret.expiresAt.getTime() < Date.now()) {
-      await Secret.deleteOne({ _id: secret._id });
+      await secretRepository.deleteById(secret._id);
       res.status(404);
       throw new Error('Secret already expired');
     }
 
     secret.remainingViews -= 1;
     if (secret.remainingViews === 0) {
-      await Secret.deleteOne({ _id: secret._id });
+      await secretRepository.deleteById(secret._id);
     } else {
-      await Secret.updateOne(
-        { _id: secret._id },
-        { remainingViews: secret.remainingViews }
-      );
+      await secretRepository.updateRemainingViewsById({
+        id: secret._id,
+        remainingViews: secret.remainingViews,
+      });
     }
+
     const secretDto = {
       hash: secret.hash,
       secretText: decryptSecret(secret.secretText),
@@ -50,20 +47,13 @@ router.post('/', async (req, res, next) => {
   try {
     const payload = req.body;
 
-    const secretText = payload.secret;
+    const secretPlainText = payload.secret;
 
-    const secret = new Secret({
-      secretText: encryptSecret(payload.secret),
-      hash: createHash(payload.secret),
-      expiresAt: Date.now() + payload.expireAfter * 60 * 1000,
-      remainingViews: payload.expireAfterViews,
-    });
-
-    const createdSecret = await secret.save();
+    const createdSecret = await secretRepository.createSecret(payload);
 
     const secretDto = {
       hash: createdSecret.hash,
-      secretText: secretText,
+      secretText: secretPlainText,
       createdAt: createdSecret.createdAt,
       expiresAt: createdSecret.expiresAt,
       remainingViews: createdSecret.remainingViews,
