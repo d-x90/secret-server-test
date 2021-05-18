@@ -1,5 +1,5 @@
 const secretRepository = require('../repositories/secretRepository');
-const { decryptSecret } = require('../services/cryptoService');
+const cryptoService = require('../services/cryptoService');
 
 const secretController = {};
 
@@ -30,7 +30,7 @@ secretController.getOneSecret = async (req, res, next) => {
 
     const secretDto = {
       hash: secret.hash,
-      secretText: decryptSecret(secret.secretText),
+      secretText: cryptoService.decryptSecret(secret.secretText),
       createdAt: secret.createdAt,
       expiresAt: secret.expiresAt,
       remainingViews: secret.remainingViews,
@@ -44,7 +44,13 @@ secretController.getOneSecret = async (req, res, next) => {
 
 secretController.createSecret = async (req, res, next) => {
   try {
-    const payload = req.body;
+    const { secret, expireAfterViews, expireAfter } = req.body;
+
+    const payload = {
+      secret,
+      expireAfterViews,
+      expireAfter,
+    };
 
     const secretPlainText = payload.secret;
 

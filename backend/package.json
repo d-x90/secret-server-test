@@ -8,7 +8,7 @@
     "prettier-format": "prettier --config .prettierrc 'src/**/*.js' --write",
     "lint": "eslint . --ext .js",
     "lint-and-fix": "eslint . --ext .js --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/**/*.spec.js"
   },
   "keywords": [],
   "author": "Dávid Horváth",
@@ -20,10 +20,13 @@
     "mongoose": "^5.12.9"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
     "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "mocha": "^8.4.0",
     "nodemon": "^2.0.7",
-    "prettier": "^2.3.0"
+    "prettier": "^2.3.0",
+    "sinon": "^10.0.0"
   }
 }

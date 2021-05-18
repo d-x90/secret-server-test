@@ -4,7 +4,8 @@
     "commonjs": true,
     "es2021": true,
     "es6": true,
-    "node": true
+    "node": true,
+    "mocha": true
   },
   "extends": ["eslint:recommended", "prettier"],
   "plugins": ["prettier"],
