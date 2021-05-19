@@ -1,6 +1,7 @@
 # secret-server-test
 
-Test project for optimonk
+Test project for optimonk.
+Fun fact: This was my first time ever working with Vue.
 
 # How to run
 
