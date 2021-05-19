@@ -12,7 +12,7 @@ secretController.getOneSecret = async (req, res, next) => {
       throw new Error('Secret not found');
     }
 
-    if (secret.expiresAt.getTime() < Date.now()) {
+    if (secret.expiresAt && secret.expiresAt.getTime() < Date.now()) {
       await secretRepository.deleteById(secret._id);
       res.status(404);
       throw new Error('Secret already expired');

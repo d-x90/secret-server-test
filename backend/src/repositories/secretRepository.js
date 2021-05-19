@@ -6,7 +6,10 @@ module.exports = {
     const newSecret = new Secret({
       secretText: encryptSecret(secret.secret),
       hash: createHash(secret.secret),
-      expiresAt: Date.now() + secret.expireAfter * 60 * 1000,
+      expiresAt:
+        secret.expireAfter !== 0
+          ? Date.now() + secret.expireAfter * 60 * 1000
+          : null,
       remainingViews: secret.expireAfterViews,
     });
 
