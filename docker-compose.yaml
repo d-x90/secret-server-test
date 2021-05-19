@@ -6,6 +6,10 @@ services:
     env_file: .env
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
+  secret-frontend:
+    build: ./frontend
+    ports:
+      - 8080:8080
   mongo:
     image: mongo
     ports:
