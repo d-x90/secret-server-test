@@ -6,10 +6,17 @@ services:
     env_file: .env
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
-  secret-frontend:
+
+  secret-frontend-vue:
     build: ./frontend-vue
     ports:
       - 8080:8080
+
+  secret-frontend-react:
+    build: ./frontend-vue
+    ports:
+      - 3000:3000
+
   mongo:
     image: mongo
     ports:
